@@ -1,0 +1,43 @@
+steps:
+  - id: 'build'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - build
+      - -t
+      - ${_REGISTRY}/$PROJECT_ID/${_DOCKER_REPO}:${SHORT_SHA}
+      - -t
+      - ${_REGISTRY}/$PROJECT_ID/${_DOCKER_REPO}:${_ENV}
+      - .
+
+  - id: 'push'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - ${_REGISTRY}/$PROJECT_ID/${_DOCKER_REPO}:${SHORT_SHA}
+
+  - id: 'deploy'
+    name: 'eu.gcr.io/$PROJECT_ID/helm'
+    env:
+      - HELM_REPO_NAME=$_HELM_REPO_NAME
+      - HELM_REPO_URL=$_HELM_REPO_URL
+    args:
+      - upgrade
+      - ${_HELM_RELEASE_NAME}
+      - ${_HELM_REPO_NAME}/${_HELM_CHART_NAME}
+      - --namespace=${_ENV}
+      - --reuse-values
+      - --set-string
+      - image.tag=${SHORT_SHA}
+
+images:
+  - ${_REGISTRY}/$PROJECT_ID/${_DOCKER_REPO}:${_ENV}
+options:
+  env:
+    - "CLOUDSDK_COMPUTE_REGION=${_GKE_MASTER_REGION}"
+    - "CLOUDSDK_CONTAINER_CLUSTER=${_K8S_CLUSTER}"
+    - "GCLOUD_PROJECT=$PROJECT_ID"
+substitutions:
+  _REGISTRY: eu.gcr.io
+  _HELM_REPO_NAME: swapy-k8s
+  _HELM_REPO_URL: gs://swapy-k8s/charts
+  
