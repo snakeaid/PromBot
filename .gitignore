@@ -184,5 +184,8 @@ package-lock.json
 /.idea/vcs.xml
 /.idea/jsLibraryMappings.xml
 
-#Environment files
+# Environment files
 *.env
+
+# Serverless directories
+.serverless

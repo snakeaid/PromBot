@@ -1,0 +1,14 @@
+service: prom-bot
+frameworkVersion: '3'
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-3
+functions:
+  start:
+    handler: index.start
+    events:
+      - http:
+          path: webhook
+          method: post
+          cors: true
