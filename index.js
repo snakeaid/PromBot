@@ -1,7 +1,7 @@
 // const dotenv = require('dotenv');
 // dotenv.config();
 
-const { Telegraf, Input } = require('telegraf');
+const {Telegraf, Input} = require('telegraf');
 const chatId = process.env.TELEGRAM_CHAT_ID;
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
@@ -15,23 +15,33 @@ bot.start(async (ctx) => {
 });
 
 bot.on('message', async (ctx) => {
-    await ctx.reply(`Дякую! Ми обов'язково розглянемо твою пропозицію💙💛`);
-
-    const senderMention = `<a href="tg://user?id=${ctx.from.username}">${ctx.from.first_name}</a>`;
-    const messageText = ctx.message.text;
-    const messageAudio = ctx.message.audio;
-
-    if (messageText) {
-        const message = senderMention + '\n' + messageText;
-        await bot.telegram.sendMessage(chatId, message, { parse_mode: 'HTML' });
-    }
-    if (messageAudio) {
-        const fileId = messageAudio.file_id;
-        const messageCaption = ctx.message.caption;
-        const message = senderMention + '\n' + messageCaption || '';
-        await bot.telegram.sendAudio(chatId, Input.fromFileId(fileId), { caption: message, parse_mode: 'HTML' });
+    const ctxMessage = ctx.message;
+    const isPrivateChat = ctxMessage.chat.type === 'private';
+    if (isPrivateChat) {
+        await ctx.reply(`Дякую! Ми обов'язково розглянемо твою пропозицію💙💛`);
+        await forwardMessageToGroup(ctx);
     }
 });
+
+const forwardMessageToGroup = async (ctx) => {
+    const ctxMessage = ctx.message;
+
+    const senderMention = `<a href="tg://user?id=${ctx.from.username}">${ctx.from.first_name}</a>`;
+
+    const messageText = ctxMessage.text;
+    if (messageText) {
+        const message = senderMention + '\n' + messageText;
+        await bot.telegram.sendMessage(chatId, message, {parse_mode: 'HTML'});
+    }
+
+    const messageAudio = ctxMessage.audio;
+    if (messageAudio) {
+        const fileId = messageAudio.file_id;
+        const messageCaption = ctxMessage.caption;
+        const message = messageCaption ? senderMention + '\n' + messageCaption : senderMention;
+        await bot.telegram.sendAudio(chatId, Input.fromFileId(fileId), {caption: message, parse_mode: 'HTML'});
+    }
+}
 
 const handle = async (event) => {
     try {
