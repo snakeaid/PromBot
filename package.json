@@ -2,10 +2,9 @@
   "name": "prom-2023-bot",
   "version": "1.0.0",
   "description": "Telegram Bot for prom music 2023",
-  "main": "src/server.js",
+  "main": "index.js",
   "scripts": {
-    "build": "npx tsc",
-    "start": "node built/server.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "dotenv": "^16.0.3",
