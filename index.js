@@ -1,21 +1,21 @@
 const {Telegraf, Input} = require('telegraf');
 const chatId = process.env.TELEGRAM_CHAT_ID;
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+const songResponse = `Дякую! Ми обов'язково розглянемо твою пропозицію💙💛`;
+const startResponse = 'Привіт!\n' +
+    'Тут будуть пісні, які ви б хотіли чути на посвяті, їх буду бачити тільки я, потім ми відберемо найдрайвовіші та найзапальніші пісні для вас)\n'+
+    'Кидай сюди свої найулюбленіші пісні)';
 
 bot.start(async (ctx) => {
     ctx.webhookReply = false;
-    await ctx.reply('Привіт!\n' +
-        'В цей бот ти можеш скидати музику для випускного.\n' +
-        'Це може бути будь-що: файл, посилання чи просто назва пісні. ' +
-        'Зроби цей випускний запальним🔥'
-    );
+    await ctx.reply(startResponse);
 });
 
 bot.on('message', async (ctx) => {
     const ctxMessage = ctx.message;
     const isPrivateChat = ctxMessage.chat.type === 'private';
     if (isPrivateChat) {
-        await ctx.reply(`Дякую! Ми обов'язково розглянемо твою пропозицію💙💛`);
+        await ctx.reply(songResponse);
         await forwardMessageToGroup(ctx);
     }
 });
