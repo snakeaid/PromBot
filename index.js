@@ -23,7 +23,7 @@ bot.on('message', async (ctx) => {
 const forwardMessageToGroup = async (ctx) => {
     const ctxMessage = ctx.message;
 
-    const senderMention = `<a href="tg://user?id=${ctx.from.username}">${ctx.from.first_name}</a>`;
+    const senderMention = `<a href="tg://user?id=${ctx.from.id}">${ctx.from.first_name}</a>`;
 
     const messageText = ctxMessage.text;
     if (messageText) {
